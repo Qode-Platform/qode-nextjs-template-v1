@@ -8,6 +8,9 @@ const raw = (process.env.NEXT_PUBLIC_BASE_PATH ?? process.env.BASE_PATH ?? "").t
 const basePath = raw ? `/${raw.replace(/^\/+|\/+$/g, "")}` : "";
 
 const nextConfig: NextConfig = {
+  // The Dockerfile's runtime stage copies .next/standalone; without this the
+  // image build fails at that COPY.
+  output: "standalone",
   ...(basePath ? { basePath, assetPrefix: basePath } : {}),
 };
 
