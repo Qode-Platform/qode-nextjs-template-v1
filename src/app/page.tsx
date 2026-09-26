@@ -6,7 +6,7 @@ export default function Home() {
       <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
         <Image
           className="dark:invert h-5 w-[100px]"
-          src="/next.svg" // next/image prefixes basePath from next.config.ts - base-path-ok
+          src="/next.svg"
           alt="Next.js logo"
           width={100}
           height={20}
@@ -47,7 +47,7 @@ export default function Home() {
           >
             <Image
               className="dark:invert h-[14px] w-4"
-              src="/vercel.svg" // next/image prefixes basePath from next.config.ts - base-path-ok
+              src="/vercel.svg"
               alt="Vercel logomark"
               width={16}
               height={14}

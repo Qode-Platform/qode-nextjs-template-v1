@@ -29,15 +29,11 @@ trusting it.
 
 Listens on `$PORT` (default `3000`); health check hits `/`.
 
-## BASE_PATH
+## Serving
 
-The fleet injects `BASE_PATH` (`/direct/<agent>:<port>`) and nginx forwards
-that prefix **unchanged** — so this app serves every route and asset under
-it. An empty or unset value means standalone mode: serve at the host root.
-
-- Next `basePath` + `assetPrefix` in next.config.ts, baked at BUILD time.
-- `HEALTH_PATH` in `fleet.conf` stays un-prefixed; the fleet prepends `$BASE_PATH` itself.
-- A value like `direct/x:3000/` is normalised to `/direct/x:3000`.
+The fleet injects `PORT` and `DATABASE_URL`. The app is served at the root
+(`/`) of its own hostname, so routes, assets and API calls use plain
+root-relative paths.
 
 ---
 
@@ -77,40 +73,3 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-
-## Rule: everything under BASE_PATH
-
-This app is not served at the host root. The fleet ingress serves it under a
-proxy prefix and forwards that prefix **unchanged**:
-
-```
-BASE_PATH=/direct/<agent>:<port>
-```
-
-**Every API call and every asset reference must carry that base path.** A bare
-`"/..."` literal resolves against the host root, so it works on localhost and
-404s in the fleet.
-
-**What Next.js rewrites for you:** only `next/link` `href`, `next/image` `src`,
-and Next's own bundle/asset URLs - `next.config.ts` sets `basePath` and
-`assetPrefix` from `NEXT_PUBLIC_BASE_PATH`.
-
-**What is NOT rewritten:** `fetch`/XHR/axios URLs, plain `<a href>` and
-`<img src>`, CSS `url(...)`, and any URL built from a string literal in code.
-
-**Use this framework's mechanism:** `NEXT_PUBLIC_BASE_PATH`. `fleet.conf` sets
-it at both build and start time, so it is available to server and client code:
-
-```tsx
-const base = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
-const res = await fetch(`${base}/api/items`);
-```
-
-**Verify with:**
-
-```bash
-npm run check:base-path
-```
-
-A line that is genuinely framework-handled can be exempted with a trailing
-`// base-path-ok` comment (say why).
